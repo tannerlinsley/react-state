@@ -16,7 +16,7 @@
   <img alt="" src="https://img.shields.io/twitter/follow/tannerlinsley.svg?style=social&label=Follow" />
 </a>
 
-Predictable state container for local React Components
+Predictable state container for self-contained React components
 
 ## Features
 

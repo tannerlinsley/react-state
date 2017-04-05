@@ -1,7 +1,7 @@
 {
   "name": "codux",
   "version": "0.0.1",
-  "description": "Simple, immersive & interactive charts for React",
+  "description": "Predictable state container for self-contained React components",
   "license": "MIT",
   "homepage": "https://github.com/tannerlinsley/codux#readme",
   "repository": {
@@ -31,7 +31,7 @@
     "postpublish": "git push --tags",
     "storybook": "start-storybook -p 8000 -c .storybook",
     "storybook:prod": "yarn run docs && pushd docs; python -m SimpleHTTPServer 8001; popd",
-    "docs": "build-storybook -o docs"
+    "docs": "build-storybook -o docs && cp .storybook/CNAME docs/CNAME"
   },
   "peerDependencies": {
     "react": "^15.3.1"
