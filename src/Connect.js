@@ -102,7 +102,7 @@ export default function Connect (props = () => ({})) {
     }
     for (var prop in statics) {
       if (statics.hasOwnProperty(prop)) {
-        Connected[prop] = statics[prop]
+        PreConnectedComponent[prop] = statics[prop]
       }
     }
     return PreConnectedComponent
