@@ -1,6 +1,6 @@
 {
   "name": "codux",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Predictable state container for self-contained React components",
   "license": "MIT",
   "homepage": "https://github.com/tannerlinsley/codux#readme",
