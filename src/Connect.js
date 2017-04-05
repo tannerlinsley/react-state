@@ -4,7 +4,7 @@ class Connected extends PureComponent {
   // let’s define what’s needed from the `context`
   static displayName = `Connect`
   static contextTypes = {
-    mydux: PropTypes.object.isRequired
+    codux: PropTypes.object.isRequired
   }
   constructor () {
     super()
@@ -14,7 +14,7 @@ class Connected extends PureComponent {
     this.resolveProps()
   }
   componentDidMount () {
-    this.unsubscribe = this.context.mydux.subscribe(this.handleChange.bind(this))
+    this.unsubscribe = this.context.codux.subscribe(this.handleChange.bind(this))
   }
   shouldComponentUpdate () {
     return false
@@ -32,14 +32,14 @@ class Connected extends PureComponent {
       ...props
     } = this.props
     const {
-      mydux
+      codux
     } = this.context
 
     const resolvedMapStateToProps = mapStateToProps
 
     const newProps = {
       ...props,
-      ...resolvedMapStateToProps(mydux.getStore(), props)
+      ...resolvedMapStateToProps(codux.getStore(), props)
     }
 
     let needsUpdate = !this.resolvedProps
@@ -68,7 +68,7 @@ class Connected extends PureComponent {
     return (
       <Comp
         {...this.resolvedProps}
-        dispatch={this.context.mydux.dispatch}
+        dispatch={this.context.codux.dispatch}
       />
     )
   }

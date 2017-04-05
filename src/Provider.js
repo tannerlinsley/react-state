@@ -2,7 +2,7 @@ import React, { PureComponent, PropTypes } from 'react'
 
 class ProviderClass extends PureComponent {
   static childContextTypes = {
-    mydux: PropTypes.object.isRequired
+    codux: PropTypes.object.isRequired
   }
   constructor (props) {
     super()
@@ -67,7 +67,7 @@ class ProviderClass extends PureComponent {
   }
   getChildContext () {
     return {
-      mydux: {
+      codux: {
         getStore: () => this.store,
         subscribe: this.subscribe,
         dispatch: this.dispatch
