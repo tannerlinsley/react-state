@@ -6,9 +6,22 @@ class Connected extends PureComponent {
   static contextTypes = {
     codux: PropTypes.object.isRequired
   }
-  constructor () {
+  constructor (props) {
     super()
     this.handleChange = this.handleChange.bind(this)
+    // Find out if mapStateToProps returns a function
+    let mapStateToPropsPreview
+    try {
+      mapStateToPropsPreview = props.mapStateToProps()
+    } catch (e) {}
+
+    if (typeof mapStateToPropsPreview === 'function') {
+      // If it does, make a new instance of it for this component
+      this.resolvedMapStateToProps = props.mapStateToProps()
+    } else {
+      // Otherwise just use it as is
+      this.resolvedMapStateToProps = props.mapStateToProps
+    }
   }
   componentWillMount () {
     this.resolveProps()
@@ -27,7 +40,7 @@ class Connected extends PureComponent {
   }
   resolveProps () {
     const {
-      mapStateToProps,
+      mapStateToProps, // eslint-disable-line
       component, // eslint-disable-line
       ...props
     } = this.props
@@ -35,11 +48,11 @@ class Connected extends PureComponent {
       codux
     } = this.context
 
-    const resolvedMapStateToProps = mapStateToProps
+    const mappedProps = this.resolvedMapStateToProps(codux.getStore(), props)
 
     const newProps = {
       ...props,
-      ...resolvedMapStateToProps(codux.getStore(), props)
+      ...mappedProps
     }
 
     let needsUpdate = !this.resolvedProps

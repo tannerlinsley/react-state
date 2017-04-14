@@ -88,11 +88,11 @@ class BazComponent extends Component {
   }
 }
 // This time, we are going to return a calculated value.
-const ConnectedBazComponent = Connect(state => ({
+const ConnectedBazComponent = Connect(state => (state) => ({
   bazIsBig: state.baz > 5
-  // Since 'bazIsBig' will be a boolean, we don't need to use a reselector
-  // or memoized value. Otherwise, a selector or memoized value is
-  // recommended for performance. More info: https://github.com/reactjs/reselect
+  // Since 'bazIsBig' will be a boolean, we don't need to use a memoized value,
+  // But if it was a non-primitive, a selector or memoized value is
+  // recommended for performance. For an excellent solution, visit https://github.com/reactjs/reselect
 }))(BazComponent)
 // Now, our BazComponent will only update when the bazIsBig value changes!
 

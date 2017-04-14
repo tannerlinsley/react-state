@@ -1,6 +1,6 @@
 import React, { PureComponent, PropTypes } from 'react'
 
-class ProviderClass extends PureComponent {
+class Provider extends PureComponent {
   static childContextTypes = {
     codux: PropTypes.object.isRequired
   }
@@ -90,20 +90,20 @@ class ProviderClass extends PureComponent {
   }
 }
 
-export default function Provider (props = () => null, initialState = {}) {
+export default function (props = () => null, initialState = {}) {
   const isComponent = typeof props !== 'function'
   const ComponentToWrap = isComponent ? props.children : props
 
   if (isComponent) {
     return (
-      <ProviderClass
+      <Provider
         {...props}
       >
         {ComponentToWrap}
-      </ProviderClass>
+      </Provider>
     )
   }
-  return class PreProviderClass extends ProviderClass {
+  return class Provider extends Provider {
     static defaultProps = {
       ComponentToWrap,
       ...initialState
