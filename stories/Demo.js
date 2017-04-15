@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
 //
 import { Provider, Connect } from '../src'
+import sourceTxt from '!raw-loader!./Demo.js'
 //
-// import CodeHighlight from './components/codeHighlight.js'
+import CodeHighlight from './components/codeHighlight.js'
 
 const boxStyle = {
   margin: '10px',
@@ -11,14 +12,73 @@ const boxStyle = {
   padding: '10px'
 }
 
-// FooBarBazComponent is pretty simple.
-// It displays it's 'foo' and 'bar' props
-class FooBarBazComponent extends Component {
+// ################
+// FooComponent
+// ################
+
+// FooComponent is pretty simple. It subscribes to,
+// and displays the 'foo' value from the provider.
+class FooComponent extends Component {
   render () {
     const {
       foo,
+      children
+    } = this.props
+    return (
+      <div style={{
+        ...boxStyle,
+        borderColor: makeRandomColor()
+      }}>
+        <div>Foo: {foo}</div>
+        {children}
+      </div>
+    )
+  }
+}
+// FooComponent needs access to 'foo', so we'll subscribe to it.
+const ConnectedFooComponent = Connect(state => ({
+  foo: state.foo
+}))(FooComponent)
+
+// ################
+// BarComponent
+// ################
+
+// BarComponent is pretty simple. It subscribes to,
+// and displays the 'bar' value from the provider.
+class BarComponent extends Component {
+  render () {
+    const {
       bar,
-      baz
+      children
+    } = this.props
+    return (
+      <div style={{
+        ...boxStyle,
+        borderColor: makeRandomColor()
+      }}>
+        <div>Bar: {bar}</div>
+        {children}
+      </div>
+    )
+  }
+}
+// BarComponent needs access to 'bar', so we'll subscribe to it.
+const ConnectedBarComponent = Connect(state => ({
+  bar: state.bar
+}))(BarComponent)
+
+// ################
+// FooBarComponent
+// ################
+
+// FooBarComponent is very similar.
+// It displays both the foo' and 'bar' props
+class FooBarComponent extends Component {
+  render () {
+    const {
+      foo,
+      bar
     } = this.props
     return (
       <div style={{
@@ -27,53 +87,27 @@ class FooBarBazComponent extends Component {
       }}>
         <div>Foo: {foo}</div>
         <div>Bar: {bar}</div>
-        <div>Baz: {baz}</div>
       </div>
     )
   }
 }
-// FooBarBazComponent needs access to 'foo' and 'bar', so we'll subscribe to them.
-const ConnectedFooBarBazComponent = Connect(state => ({
+// FooBarComponent needs access to 'foo' and 'bar', so we'll subscribe to both of them.
+const ConnectedFooBarComponent = Connect(state => ({
   foo: state.foo,
-  bar: state.bar,
-  baz: state.baz
-}))(FooBarBazComponent)
-// Now, any time the 'foo' or 'bar' values change, FooBarBazComponent will rerender :)
+  bar: state.bar
+}))(FooBarComponent)
+// Now, any time the 'foo' or 'bar' values change, FooBarComponent will rerender :)
 
-// FooComponent is very similar. It displays its 'foo' prop.
-class FooComponent extends Component {
-  render () {
-    return (
-      // Instead of connecting this component ahead of time though,
-      // we can do it on the fly using Connect as a component in
-      // conjunction with the 'subscribe' prop
-      <Connect subscribe={(state) => ({
-        foo: state.foo
-      })}
-      >
-        {({
-          foo // Now, any time 'foo' changes, our child function/component will update
-        }) => {
-          return (
-            <div style={{
-              ...boxStyle,
-              borderColor: makeRandomColor()
-            }}>
-              <div>Foo: {foo}</div>
-            </div>
-          )
-        }}
-      </Connect>
-    )
-  }
-}
+// ################
+// BazComponent
+// ################
 
 // The BazComponent shows whether the 'baz' value is
 // greater than 5 and also displays a message.
 class BazComponent extends Component {
   render () {
     const {
-      bazIsBig,
+      bazIsFourth,
       message
     } = this.props
     return (
@@ -81,20 +115,26 @@ class BazComponent extends Component {
         ...boxStyle,
         borderColor: makeRandomColor()
       }}>
-        <div>Baz is > 5: {bazIsBig.toString()}</div>
+        <div>Baz is a multiple of 4: {bazIsFourth.toString()}</div>
         <div>Message: {message}</div>
       </div>
     )
   }
 }
 // This time, we are going to return a calculated value.
-const ConnectedBazComponent = Connect(state => (state) => ({
-  bazIsBig: state.baz > 5
-  // Since 'bazIsBig' will be a boolean, we don't need to use a memoized value,
-  // But if it was a non-primitive, a selector or memoized value is
-  // recommended for performance. For an excellent solution, visit https://github.com/reactjs/reselect
-}))(BazComponent)
-// Now, our BazComponent will only update when the bazIsBig value changes!
+const ConnectedBazComponent = Connect(state => {
+  return ({
+    bazIsFourth: state.baz % 4 === 0
+    // Since 'bazIsFourth' will be a boolean, we don't need to use a memoized value,
+    // But if it was a non-primitive, a selector or memoized value is
+    // recommended for performance. For an excellent solution, visit https://github.com/reactjs/reselect
+  })
+})(BazComponent)
+// Now, our BazComponent will only update when the bazIsFourth value changes!
+
+// ################
+// ControlComponent
+// ################
 
 // ControlComponent contains a few buttons that will change
 // different parts of our state.
@@ -173,14 +213,15 @@ class ControlComponent extends Component {
     )
   }
 }
-
 // The control component doesn't depend on any state, but
 // we still Connect it se we can use the 'dispatch' prop
 const ConnectedControlComponent = Connect()(ControlComponent)
 
-// -------------------------------------------------'
+// ################
+// Reusable Component
+// ################
 
-// Now let's our top-level reusable component.
+// Now let's create our our reusable component.
 // We need to keep track of state in our component,
 // and your first instinct might be to use local state
 // to accomplish this. Interestingly enough though,
@@ -195,64 +236,46 @@ const ConnectedControlComponent = Connect()(ControlComponent)
 
 // This is where Provider comes in!
 
-// There are 2 ways to use the Provider component:
-
-// 1: As an inline component
-class InlineMyAwesomeReusableComponent extends Component {
-  render () {
-    return (
-      // If you use Provider as an inline component, any props you pass
-      // will be used as the initial state for the Provider.
-      <Provider
-        // It's also important to note that if any of these
-        // props change, the provider state will merged with
-        // ALL of the props passed to the Provider
-        baz={3}
-        {...this.props}
-      >
-        {/*
-          Finally, instead of passing down a slew of props and callbacks,
-          we can compose our component as cleanly as we want
-        */}
-        <ConnectedFooBarBazComponent />
-        <FooComponent />
-        <ConnectedBazComponent
-          message='Hello!'
-        />
-        <ConnectedControlComponent />
-      </Provider>
-    )
-  }
-}
-
-// 2: As a higher order component or decorator
+// Provider is used as a higher order component or decorator
 class MyAwesomeReusableComponent extends Component {
   render () {
+    // Components that are wrapped with Provider automatically
+    // receive the entire provider state as props.
     return (
-      <div>
-        <ConnectedFooBarBazComponent />
-        <FooComponent />
-        <ConnectedBazComponent
-          message='Hi there!'
-        />
+      <div style={{
+        ...boxStyle,
+        borderColor: makeRandomColor()
+      }}>
+        Current Props:
+        <br />
+        <br />
+        <CodeHighlight>{() => JSON.stringify(this.props, null, 2)}</CodeHighlight>
+        <br />
+        <ConnectedFooComponent>
+          <ConnectedBarComponent>
+            <ConnectedBazComponent
+              message='Hi there!' // You can continue to pass props as normal :)
+            />
+          </ConnectedBarComponent>
+        </ConnectedFooComponent>
+        <ConnectedFooBarComponent />
         <ConnectedControlComponent />
       </div>
     )
   }
 }
-// When using Provider as a higher order component, you can pass an object
-// as the second argument which will serve as the initial state for the Provider
+// Just pass Provider a component you would like to wrap and an optional config object
+// In the config, we can supply an 'initial' state for the Provider
 const ProvidedMyAwesomeReusableComponent = Provider(MyAwesomeReusableComponent, {
-  baz: 3
+  initial: {
+    baz: 3
+  }
 })
 
 class Demo extends Component {
   constructor () {
     super()
-    this.state = {
-      foo: 1,
-      bar: 2
-    }
+    this.state = getRandomFooBar()
   }
   render () {
     const {
@@ -262,33 +285,47 @@ class Demo extends Component {
     return (
       // Let's use our awesome reusable component with some props!
       <div>
+        To aid in visualizing performance, each of our components has a border that changes every time it rerenders.
+        <br />
+        <br />
+        Initial state for MyAwesomeReusableComponent:
+        <br />
+        <br />
+        <CodeHighlight>{() => JSON.stringify({
+          baz: 3
+        }, null, 2)}</CodeHighlight>
+        <br />
+        Current state given to MyAwesomeReusableComponent:
+        <br />
+        <br />
+        <CodeHighlight>{() => JSON.stringify(this.state, null, 2)}</CodeHighlight>
+        <br />
         <button
-          onClick={() => this.setState(state => ({
-            foo: 1,
-            bar: 2
-          }))}
-        >Reset State</button>
-        <br />
-        <br />
-        <InlineMyAwesomeReusableComponent
-          foo={foo}
-          bar={bar}
-        />
-        <br />
-        <br />
-        <hr />
-        <br />
+          onClick={() => this.setState(state => getRandomFooBar())}
+        >
+          Randomize State
+        </button>
         <br />
         <ProvidedMyAwesomeReusableComponent
+          // Any props passed to our Provider-wrapped component will always be merged
+          // onto the internal state
           foo={foo}
           bar={bar}
         />
+        <CodeHighlight>{() => sourceTxt}</CodeHighlight>
       </div>
     )
   }
 }
 
 export default () => <Demo />
+
+function getRandomFooBar () {
+  return {
+    foo: Math.ceil(Math.random() * 10),
+    bar: Math.ceil(Math.random() * 5)
+  }
+}
 
 function makeRandomColor () {
   return `rgb(${Math.round(Math.random() * 255)}, ${Math.round(Math.random() * 255)}, ${Math.round(Math.random() * 255)})`

@@ -1,123 +1,117 @@
 import React, { PureComponent, PropTypes } from 'react'
 
-class Connected extends PureComponent {
-  // let’s define what’s needed from the `context`
-  static displayName = `Connect`
-  static contextTypes = {
-    codux: PropTypes.object.isRequired
-  }
-  constructor (props) {
-    super()
-    this.handleChange = this.handleChange.bind(this)
-    // Find out if mapStateToProps returns a function
-    let mapStateToPropsPreview
-    try {
-      mapStateToPropsPreview = props.mapStateToProps()
-    } catch (e) {}
+const alwaysUpdate = d => d
+const neverUpdate = () => ({})
 
-    if (typeof mapStateToPropsPreview === 'function') {
-      // If it does, make a new instance of it for this component
-      this.resolvedMapStateToProps = props.mapStateToProps()
-    } else {
-      // Otherwise just use it as is
-      this.resolvedMapStateToProps = props.mapStateToProps
-    }
-  }
-  componentWillMount () {
-    this.resolveProps()
-  }
-  componentDidMount () {
-    this.unsubscribe = this.context.codux.subscribe(this.handleChange.bind(this))
-  }
-  shouldComponentUpdate () {
-    return false
-  }
-  componentWillUnmount () {
-    this.unsubscribe()
-  }
-  handleChange () {
-    this.resolveProps()
-  }
-  resolveProps () {
-    const {
-      mapStateToProps, // eslint-disable-line
-      component, // eslint-disable-line
-      ...props
-    } = this.props
-    const {
-      codux
-    } = this.context
-
-    const mappedProps = this.resolvedMapStateToProps(codux.getStore(), props)
-
-    const newProps = {
-      ...props,
-      ...mappedProps
-    }
-
-    let needsUpdate = !this.resolvedProps
-
-    if (this.resolvedProps) {
-      for (var prop in newProps) {
-        if (newProps.hasOwnProperty(prop)) {
-          if (this.resolvedProps[prop] !== newProps[prop]) {
-            needsUpdate = true
-            break
-          }
-          if (needsUpdate) break
-        }
-        if (needsUpdate) break
-      }
-    }
-
-    this.resolvedProps = newProps
-
-    if (needsUpdate) {
-      this.forceUpdate()
-    }
-  }
-  render () {
-    const Comp = this.props.component
-    return (
-      <Comp
-        {...this.resolvedProps}
-        dispatch={this.context.codux.dispatch}
-      />
-    )
-  }
+const defaultConfig = {
+  statics: {}
 }
 
-export default function Connect (props = () => ({})) {
-  const isComponent = props && typeof props !== 'function'
+export default function Connect (subscribe, config = defaultConfig) {
+  // If subscribe is true, always update,
+  // If Subscribe is truthy, expect a function
+  // Otherwise, never update the component, only provide dispatch
+  subscribe = subscribe === true ? alwaysUpdate : (subscribe || neverUpdate)
+  const { statics } = config
 
-  if (isComponent) {
-    const {
-      subscribe,
-      children,
-      ...rest
-    } = props
-    return (
-      <Connected
-        mapStateToProps={subscribe}
-        component={children}
-        {...rest}
-      />
-    )
-  }
-
-  return (ComponentToWrap, statics = {}) => {
-    class PreConnectedComponent extends Connected {
+  return (ComponentToWrap) => {
+    class Connected extends PureComponent {
+      // let’s define what’s needed from the `context`
       static displayName = `Connect(${ComponentToWrap.displayName || ComponentToWrap.name})`
-      static defaultProps = {
-        mapStateToProps: props,
-        component: ComponentToWrap
+      static contextTypes = {
+        codux: PropTypes.object.isRequired
+      }
+      constructor () {
+        super()
+        // Bind non-react methods
+        this.onNotify = this.onNotify.bind(this)
+
+        // Find out if subscribe returns a function
+        let subscribePreview
+        try {
+          subscribePreview = subscribe()
+        } catch (e) {}
+
+        if (typeof subscribePreview === 'function') {
+          // If it does, make a new instance of it for this component
+          this.subscribe = subscribe()
+        } else {
+          // Otherwise just use it as is
+          this.subscribe = subscribe
+        }
+      }
+      componentWillMount () {
+        // Resolve props on mount
+        this.resolveProps()
+      }
+      componentDidMount () {
+        // Subscribe to the store for updates
+        this.unsubscribe = this.context.codux.subscribe(this.onNotify.bind(this))
+      }
+      shouldComponentUpdate () {
+        return false
+      }
+      componentWillUnmount () {
+        this.unsubscribe()
+      }
+      onNotify () {
+        if (this.resolveProps()) {
+          this.forceUpdate()
+        }
+      }
+      resolveProps () {
+        const {
+          subscribe, // eslint-disable-line
+          config, // eslint-disable-line
+          children, // eslint-disable-line
+          ...rest
+        } = this.props
+        const {
+          codux
+        } = this.context
+
+        const mappedProps = this.subscribe(codux.getStore(), rest)
+
+        const newProps = {
+          ...rest,
+          ...mappedProps
+        }
+
+        let needsUpdate = !this.resolvedProps
+
+        if (this.resolvedProps) {
+          for (var prop in newProps) {
+            if (newProps.hasOwnProperty(prop)) {
+              if (this.resolvedProps[prop] !== newProps[prop]) {
+                needsUpdate = true
+                break
+              }
+              if (needsUpdate) break
+            }
+            if (needsUpdate) break
+          }
+        }
+
+        this.resolvedProps = newProps
+
+        return needsUpdate
+      }
+      render () {
+        return (
+          <ComponentToWrap
+            {...this.props}
+            {...this.resolvedProps}
+            dispatch={this.context.codux.dispatch}
+          />
+        )
       }
     }
+
     for (var prop in statics) {
       if (statics.hasOwnProperty(prop)) {
-        PreConnectedComponent[prop] = statics[prop]
+        Connected[prop] = statics[prop]
       }
     }
-    return PreConnectedComponent
+    return Connected
   }
 }
