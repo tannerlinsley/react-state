@@ -2,9 +2,7 @@ import React from 'react'
 import { configure, storiesOf } from '@kadira/storybook'
 import { setOptions } from '@kadira/storybook-addon-options'
 import Perf from 'react-addons-perf'
-
-window.Perf = Perf
-
+//
 import './reset.css'
 import './fonts.css'
 import './layout.css'
@@ -14,7 +12,9 @@ import 'github-markdown-css/github-markdown.css'
 import Readme from '../README.md'
 //
 import Demo from '../stories/Demo.js'
+import ConnectFiltering from '../stories/ConnectFiltering.js'
 //
+window.Perf = Perf
 
 setOptions({
   showDownPanel: false
@@ -35,4 +35,5 @@ configure(() => {
     })
   storiesOf('2. Demos')
     .add('Basic', Demo)
+    .add('Connect Filtering', ConnectFiltering)
 }, module)

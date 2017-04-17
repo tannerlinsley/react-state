@@ -46,7 +46,7 @@ export default function Connect (subscribe, config = defaultConfig) {
       }
       componentDidMount () {
         // Subscribe to the store for updates
-        this.unsubscribe = this.context.codux.subscribe(this.onNotify.bind(this))
+        this.unsubscribe = this.context.codux.subscribe(this.onNotify.bind(this), config)
       }
       shouldComponentUpdate () {
         return false
@@ -61,8 +61,6 @@ export default function Connect (subscribe, config = defaultConfig) {
       }
       resolveProps () {
         const {
-          subscribe, // eslint-disable-line
-          config, // eslint-disable-line
           children, // eslint-disable-line
           ...rest
         } = this.props

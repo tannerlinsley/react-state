@@ -7,9 +7,12 @@ import CodeHighlight from './components/codeHighlight.js'
 
 const boxStyle = {
   margin: '10px',
-  border: '5px solid black',
   borderRadius: '5px',
-  padding: '10px'
+  padding: '10px',
+  color: 'white',
+  transition: 'all .5s ease',
+  fontWeight: 'bolder',
+  textShadow: '0 0 10px black'
 }
 
 // ################
@@ -27,7 +30,7 @@ class FooComponent extends Component {
     return (
       <div style={{
         ...boxStyle,
-        borderColor: makeRandomColor()
+        background: makeRandomColor()
       }}>
         <div>Foo: {foo}</div>
         {children}
@@ -55,7 +58,7 @@ class BarComponent extends Component {
     return (
       <div style={{
         ...boxStyle,
-        borderColor: makeRandomColor()
+        background: makeRandomColor()
       }}>
         <div>Bar: {bar}</div>
         {children}
@@ -83,7 +86,7 @@ class FooBarComponent extends Component {
     return (
       <div style={{
         ...boxStyle,
-        borderColor: makeRandomColor()
+        background: makeRandomColor()
       }}>
         <div>Foo: {foo}</div>
         <div>Bar: {bar}</div>
@@ -113,7 +116,7 @@ class BazComponent extends Component {
     return (
       <div style={{
         ...boxStyle,
-        borderColor: makeRandomColor()
+        background: makeRandomColor()
       }}>
         <div>Baz is a multiple of 4: {bazIsFourth.toString()}</div>
         <div>Message: {message}</div>
@@ -146,7 +149,7 @@ class ControlComponent extends Component {
     return (
       <div style={{
         ...boxStyle,
-        borderColor: makeRandomColor()
+        background: makeRandomColor()
       }}>
         <div>
           Foo: &nbsp;
@@ -244,7 +247,7 @@ class MyAwesomeReusableComponent extends Component {
     return (
       <div style={{
         ...boxStyle,
-        borderColor: makeRandomColor()
+        background: makeRandomColor()
       }}>
         Current Props:
         <br />
@@ -285,7 +288,7 @@ class Demo extends Component {
     return (
       // Let's use our awesome reusable component with some props!
       <div>
-        To aid in visualizing performance, each of our components has a border that changes every time it rerenders.
+        To aid in visualizing performance, each of our components has a background that changes every time it rerenders.
         <br />
         <br />
         Initial state for MyAwesomeReusableComponent:

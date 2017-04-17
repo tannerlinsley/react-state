@@ -46,7 +46,7 @@ export default function (ComponentToWrap, config = defaultConfig) {
         this.subscriptions = this.subscriptions.filter(d => d !== subscription)
       }
     }
-    dispatch (fn, meta) {
+    dispatch (fn, meta = {}) {
       // When we recieve a dispatch command, build a new version
       // of the store by calling the dispatch function
 
