@@ -26,7 +26,7 @@
     "build:node": "babel src --out-dir lib --source-maps inline",
     "watch": "onchange 'src/**' -i -- npm-run-all build:*",
     "test": "standard",
-    "umd": "rm -rf codux.js && browserify lib/index.js -s codux -x react -t babelify -g uglifyify -o codux.js",
+    "umd": "rimraf react-table.js && webpack --config umd.webpack.js",
     "prepublish": "npm-run-all build:* && npm run umd",
     "postpublish": "git push --tags",
     "storybook": "start-storybook -p 8000 -c .storybook",
@@ -57,9 +57,11 @@
     "react-addons-perf": "^15.3.2",
     "react-dom": "^15.3.1",
     "react-resizable": "^1.6.0",
+    "rimraf": "^2.6.1",
     "standard": "^10.0.2",
     "stylus": "^0.54.5",
-    "uglifyify": "^3.0.3"
+    "uglifyify": "^3.0.3",
+    "webpack": "^2.4.1"
   },
   "browserify-shim": {
     "react": "global:React"
