@@ -30,59 +30,14 @@ Predictable state container for self-contained React components
 
 ## Table of Contents
 - [Installation](#installation)
-- [Inline Example](#inline-example)
-- [HOC Example](#hoc-example)
+- [Example](#example)
 
 ## Installation
 ```bash
 $ yarn add codux
 ```
 
-## Inline Example
-```javascript
-import React from 'react'
-import { Provider, Connect } from 'codux'
-
-export default const InlineDemo = (
-  // A Provider is a new instance of state for all nodes inside it
-  <Provider
-    count: 0
-  >
-    // Use Connect to subscribe to values from the Provider state
-    <Connect
-      subscribe={state => ({
-        count: state.count
-      })}
-    >
-      {({
-        count
-      }) => (
-        <span>{count}</span>
-      )}
-    </Connect>
-    // Every Connected component can use the 'dispatch' prop
-    // to update the Provider's store
-    <Connect>
-      {({
-        dispatch
-      }) => (
-        <button
-          // 'dispatch' takes a function that receives the
-          // current provider state and returns a new one.
-          onClick={() => dispatch(state => ({
-            ...state,
-            count: state.count + 1 // Immutable is best for performance :)
-          }))}
-        >
-          Increment Count
-        </button>
-      )}
-    </Connect>
-  </Provider>
-)
-```
-
-## HOC Example
+## Example
 ```javascript
 import React from 'react'
 import { Provider, Connect } from 'codux'
@@ -112,7 +67,7 @@ const Increment = ({ dispatch }) => ({
 }
 const ConnectedIncrement = Connect()(Increment)
 
-const HocDemo = () => (
+const Demo = () => (
   <div>
     <ConnectedCount />
     <ConnectedIncrement />
@@ -120,9 +75,147 @@ const HocDemo = () => (
 )
 
 // A Provider is a new instance of state for all nodes inside it
-const ProvidedHocDemo = Provider(HocDemo)
+export default Provider(Demo)
+```
 
-export default ProvidedHocDemo
+## Provider
+The `Provider` higher-order component creates a new state that wraps the component you pass it. You can nest Providers inside each other, and when doing so, `Connect`ed components inside them will connect to the nearest parent Provider. You can also give Providers an initial state in an optional config object.
+##### Creating a Provider
+```javascript
+const ProviderWrappedComponent = Provider(MyComponent, {
+  // the initial state of the provider
+  initial: {
+    foo: 1,
+    bar: 'hello'
+  }
+})
+```
+##### Passing props as state
+Any props you pass to a Provider will be merged with the state and overwrite any same-key values.
+```javascript
+<ProviderWrappedComponent
+  foo={1}
+  bar='hello'
+/>
+```
+##### Programatic Control
+If you ever need to programmatically dispatch to a provider, you can use a ref!
+```javascript
+<ProviderWrappedComponent
+  ref={provider => {
+    provider.dispatch
+  }}
+/>
+```
+
+## Connect
+The `Connect` higher-order component subscribes a component to any part of the nearest parent Provider, and also provides the component the `dispatch` prop for updating the state.
+##### Subscribing to state
+To subscribe to a part of the provider state, we use a function that takes the state (and component props) and returns a new object with parts of the state you're interested in. Any time the values of that object change, your component will be updated! (There is no need to return props that already exist on your component. The 'props' argument is simply there as an aid in calculating the state you need to subscribe to)
+```javascript
+class MyComponent extends Component {
+  render () {
+    return (
+      <div>
+        // This 'foo' prop comes from our Connect function below
+        <div>{ this.props.foo }</div>
+      </div>
+    )
+  }
+}
+const MyConnectedComponent = Connect(state => {
+  return {
+    foo: state.foo // Any time 'foo' changes, our component will update!
+  }
+})
+```
+##### Memoization and Selectors
+If you need to subscribe to computed or derived data, you can use a memoized selector.  This functions exactly as it does in Redux. For more information, and examples on usage, please refer to [Redux - Computing Derived Data](http://redux.js.org/docs/recipes/ComputingDerivedData.html)
+```javascript
+class MyComponent extends Component {
+  render () {
+    return (
+      <div>
+        <div>{ this.props.computedValue }</div>
+      </div>
+    )
+  }
+}
+const MyConnectedComponent = Connect((state, props) => {
+  return {
+    computedValue: selectMyComputedValue(state, props)
+  }
+})
+```
+##### Using the 'dispatch' prop
+Every connected component receives the 'dispatch' prop. You can use this 'dispatch' function to update the provider state. Just dispatch a function that takes the current state and returns a new version of the state.  It's very important to make changes using immutability and also include any unchanged parts of the state.  What you return will replace the entire state!
+```javascript
+class MyComponent extends Component {
+  render () {
+    return (
+      <div>
+        <button
+          onClick={this.props.dispatch(state => {
+            return {
+              ...state, // include unchanged parts of the state
+              foo: Math.ceil(Math.random() * 10) // update our new random 'foo' value
+            }
+          })}
+        >
+          Randomize Foo
+        </button>
+      </div>
+    )
+  }
+}
+const MyConnectedComponent = Connect()(MyComponent)
+```
+##### Dispatch Meta
+Any time you dispatch, you have the option to send through a meta object. This is useful for middlewares, hooks, and other optimization options throughout Codux.
+```javascript
+class MyComponent extends Component {
+  render () {
+    return (
+      <div>
+        <button
+          onClick={this.props.dispatch(state => ({
+            ...state,
+            foo: Math.Ceil(Math.random() * 10)
+          }, {
+            // you can use any object as meta
+            mySpecialValue: 'superSpecial'
+          })}
+        >
+          Randomize Foo
+        </button>
+      </div>
+    )
+  }
+}
+const MyConnectedComponent = Connect()(MyComponent)
+```
+##### Connect Config
+`Connect` can be customized for performance and various other enhancments:
+- `filter(oldState, newState, meta)`: Only run connect if this function returns true. Useful for avoiding high-velocity dispatches or general performance tuning.
+- `statics{}`: An object of static properties to add to the connected component's class.
+```javascript
+class MyComponent extends Component { ... }
+const MyConnectedComponent = Connect(
+  state => {...},
+  {
+    // Using the following 'filter' function, this Connect will not run if 'meta.mySpecialValue === 'superSpecial'
+    filter: (oldState, newState, meta) => {
+      return meta.mySpecialValue ? meta.mySpecialValue !== 'superSpecial' : true
+    },
+
+    // The Connected component class will also gain these statics
+    statics: {
+      defaultProps: {
+        someProp: 'hello!'
+      }
+    }
+  }
+)(MyComponent)
 ```
 
 ## Contributing
