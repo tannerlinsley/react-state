@@ -1,4 +1,4 @@
-# codux
+# [codux](https://github.com/tannerlinsley/codux)
 
 <a href="https://travis-ci.org/tannerlinsley/codux" target="\_parent">
   <img alt="" src="https://travis-ci.org/tannerlinsley/codux.svg?branch=master" />
@@ -31,6 +31,16 @@ Predictable state container for self-contained React components
 ## Table of Contents
 - [Installation](#installation)
 - [Example](#example)
+- [Provider](#provider)
+  - [Creating a Provider](#creating-a-provider)
+  - [Initial State](#initial-state)
+  - [Passing Props as State](#passing-props-as-state)
+  - [Programatic Control](#programatic-control)
+- [Connect](#connect)
+  - [Memoization And Selectors](#memoization-and-selectors)
+  - [Using the Dispatch Prop](#using-the-dispatch-prop)
+  - [Dispatch Meta](#dispatch-meta)
+  - [Connect Config](#connect-config)
 
 ## Installation
 ```bash
@@ -82,6 +92,10 @@ export default Provider(Demo)
 The `Provider` higher-order component creates a new state that wraps the component you pass it. You can nest Providers inside each other, and when doing so, `Connect`ed components inside them will connect to the nearest parent Provider. You can also give Providers an initial state in an optional config object.
 ##### Creating a Provider
 ```javascript
+const ProviderWrappedComponent = Provider(MyComponent)
+```
+##### Initial State
+```javascript
 const ProviderWrappedComponent = Provider(MyComponent, {
   // the initial state of the provider
   initial: {
@@ -129,24 +143,6 @@ const MyConnectedComponent = Connect(state => {
   }
 })
 ```
-##### Memoization and Selectors
-If you need to subscribe to computed or derived data, you can use a memoized selector.  This functions exactly as it does in Redux. For more information, and examples on usage, please refer to [Redux - Computing Derived Data](http://redux.js.org/docs/recipes/ComputingDerivedData.html)
-```javascript
-class MyComponent extends Component {
-  render () {
-    return (
-      <div>
-        <div>{ this.props.computedValue }</div>
-      </div>
-    )
-  }
-}
-const MyConnectedComponent = Connect((state, props) => {
-  return {
-    computedValue: selectMyComputedValue(state, props)
-  }
-})
-```
 ##### Using the 'dispatch' prop
 Every connected component receives the 'dispatch' prop. You can use this 'dispatch' function to update the provider state. Just dispatch a function that takes the current state and returns a new version of the state.  It's very important to make changes using immutability and also include any unchanged parts of the state.  What you return will replace the entire state!
 ```javascript
@@ -169,6 +165,24 @@ class MyComponent extends Component {
   }
 }
 const MyConnectedComponent = Connect()(MyComponent)
+```
+##### Memoization and Selectors
+If you need to subscribe to computed or derived data, you can use a memoized selector.  This functions exactly as it does in Redux. For more information, and examples on usage, please refer to [Redux - Computing Derived Data](http://redux.js.org/docs/recipes/ComputingDerivedData.html)
+```javascript
+class MyComponent extends Component {
+  render () {
+    return (
+      <div>
+        <div>{ this.props.computedValue }</div>
+      </div>
+    )
+  }
+}
+const MyConnectedComponent = Connect((state, props) => {
+  return {
+    computedValue: selectMyComputedValue(state, props)
+  }
+})
 ```
 ##### Dispatch Meta
 Any time you dispatch, you have the option to send through a meta object. This is useful for middlewares, hooks, and other optimization options throughout Codux.
