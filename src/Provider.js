@@ -49,6 +49,7 @@ export default function (ComponentToWrap, config = defaultConfig) {
     dispatch (fn, meta) {
       // When we recieve a dispatch command, build a new version
       // of the store by calling the dispatch function
+
       // TODO: beforeDispatch
       const oldStore = this.store
       const newStore = fn(oldStore)
@@ -74,7 +75,11 @@ export default function (ComponentToWrap, config = defaultConfig) {
     }
     render () {
       return (
-        <ComponentToWrap {...this.store} />
+        <ComponentToWrap
+          {...this.store}
+        >
+          {this.props.children}
+        </ComponentToWrap>
       )
     }
   }
