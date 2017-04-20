@@ -48,6 +48,11 @@ export default function Connect (subscribe, config = defaultConfig) {
         // Subscribe to the store for updates
         this.unsubscribe = this.context.codux.subscribe(this.onNotify.bind(this), config)
       }
+      componentWillReceiveProps (nextProps) {
+        if (this.resolveProps(nextProps)) {
+          this.forceUpdate()
+        }
+      }
       shouldComponentUpdate () {
         return false
       }
@@ -59,11 +64,11 @@ export default function Connect (subscribe, config = defaultConfig) {
           this.forceUpdate()
         }
       }
-      resolveProps () {
+      resolveProps (props = this.props) {
         const {
           children, // eslint-disable-line
           ...rest
-        } = this.props
+        } = props
         const {
           codux
         } = this.context
