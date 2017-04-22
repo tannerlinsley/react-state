@@ -8,7 +8,7 @@ export default function (ComponentToWrap, config = defaultConfig) {
   return class Provider extends PureComponent {
     // Define our context key
     static childContextTypes = {
-      codux: PropTypes.object.isRequired
+      reactState: PropTypes.object.isRequired
     }
     constructor (props) {
       super()
@@ -66,7 +66,7 @@ export default function (ComponentToWrap, config = defaultConfig) {
     }
     getChildContext () {
       return {
-        codux: {
+        reactState: {
           getStore: () => this.store,
           subscribe: this.subscribe,
           dispatch: this.dispatch

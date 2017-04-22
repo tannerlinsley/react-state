@@ -1,32 +1,32 @@
-# [codux](https://github.com/tannerlinsley/codux)
+# [react-state](https://github.com/tannerlinsley/react-state)
 
-<a href="https://travis-ci.org/tannerlinsley/codux" target="\_parent">
-  <img alt="" src="https://travis-ci.org/tannerlinsley/codux.svg?branch=master" />
+<a href="https://travis-ci.org/tannerlinsley/react-state" target="\_parent">
+  <img alt="" src="https://travis-ci.org/tannerlinsley/react-state.svg?branch=master" />
 </a>
-<a href="https://npmjs.com/package/codux" target="\_parent">
-  <img alt="" src="https://img.shields.io/npm/dm/codux.svg" />
+<a href="https://npmjs.com/package/react-state" target="\_parent">
+  <img alt="" src="https://img.shields.io/npm/dm/react-state.svg" />
 </a>
 <a href="https://react-chat-signup.herokuapp.com/" target="\_parent">
   <img alt="" src="https://img.shields.io/badge/slack-react--chat-blue.svg" />
 </a>
-<a href="https://github.com/tannerlinsley/codux" target="\_parent">
-  <img alt="" src="https://img.shields.io/github/stars/tannerlinsley/codux.svg?style=social&label=Star" />
+<a href="https://github.com/tannerlinsley/react-state" target="\_parent">
+  <img alt="" src="https://img.shields.io/github/stars/tannerlinsley/react-state.svg?style=social&label=Star" />
 </a>
 <a href="https://twitter.com/tannerlinsley" target="\_parent">
   <img alt="" src="https://img.shields.io/twitter/follow/tannerlinsley.svg?style=social&label=Follow" />
 </a>
 
-Predictable state container for self-contained React components
+Superpowers for managing local and reusable state in React
 
 ## Features
 
 - **2kb!** (minified)
-- No dependencies (other than React)
-- Avoid repetitive props and callbacks throughout deeply nested components
-- Improved performance via React.PureComponent
-- Redux inspired API
+- No dependencies
+- Ditch repetitive props and callbacks throughout deeply nested components
+- Improved performance via Provider & Connector components
+- Testable and predictable
 
-## [Demo](https://codux.js.org/?selectedKind=2.%20Demos&selectedStory=Kitchen%20Sink&full=0&down=0&left=1&panelRight=0&downPanel=kadirahq%2Fstorybook-addon-actions%2Factions-panel)
+## [Demo](https://react-state.js.org/?selectedKind=2.%20Demos&selectedStory=Kitchen%20Sink&full=0&down=0&left=1&panelRight=0&downPanel=kadirahq%2Fstorybook-addon-actions%2Factions-panel)
 
 ## Table of Contents
 - [Installation](#installation)
@@ -38,19 +38,19 @@ Predictable state container for self-contained React components
   - [Programatic Control](#programatic-control)
 - [Connect](#connect)
   - [Memoization And Selectors](#memoization-and-selectors)
-  - [Using the Dispatch Prop](#using-the-dispatch-prop)
+  - [Using the Dispatcher](#using-the-dispatch)
   - [Dispatch Meta](#dispatch-meta)
   - [Connect Config](#connect-config)
 
 ## Installation
 ```bash
-$ yarn add codux
+$ yarn add react-state
 ```
 
 ## Example
 ```javascript
 import React from 'react'
-import { Provider, Connect } from 'codux'
+import { Provider, Connect } from 'react-state'
 
 
 const Count = ({ count }) => ({
@@ -143,8 +143,8 @@ const MyConnectedComponent = Connect(state => {
   }
 })
 ```
-##### Using the 'dispatch' prop
-Every connected component receives the 'dispatch' prop. You can use this 'dispatch' function to update the provider state. Just dispatch a function that takes the current state and returns a new version of the state.  It's very important to make changes using immutability and also include any unchanged parts of the state.  What you return will replace the entire state!
+##### Using the dispatcher
+Every connected component receives a 'dispatch' prop. You can use this 'dispatch' function to update the provider state. Just dispatch a function that takes the current state and returns a new version of the state.  It's very important to make changes using immutability and also include any unchanged parts of the state.  What you return will replace the entire state!
 ```javascript
 class MyComponent extends Component {
   render () {
@@ -185,7 +185,7 @@ const MyConnectedComponent = Connect((state, props) => {
 })
 ```
 ##### Dispatch Meta
-Any time you dispatch, you have the option to send through a meta object. This is useful for middlewares, hooks, and other optimization options throughout Codux.
+Any time you dispatch, you have the option to send through a meta object. This is useful for middlewares, hooks, and other optimization options throughout react-state.
 ```javascript
 class MyComponent extends Component {
   render () {

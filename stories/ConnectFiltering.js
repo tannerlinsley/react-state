@@ -118,7 +118,7 @@ class ConnectFiltering extends Component {
   render () {
     return (
       <div>
-        Codux is very good at change detection because of the way it can compare old and new states using Connect functions. But, whenever you dispatch an state change to your provider, EVERY connected component's subscribe function will run.
+        react-state is very good at change detection because of the way it can compare old and new states using Connect functions. But, whenever you dispatch an state change to your provider, EVERY connected component's subscribe function will run.
         <br />
         <br />
         If you are dispatching extremly rapidly, or having thousands of connected components, this can be extremely expensive, especially if you know beforehand that the subscribe function shouldn't even run!

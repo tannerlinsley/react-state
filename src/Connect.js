@@ -19,7 +19,7 @@ export default function Connect (subscribe, config = defaultConfig) {
       // let’s define what’s needed from the `context`
       static displayName = `Connect(${ComponentToWrap.displayName || ComponentToWrap.name})`
       static contextTypes = {
-        codux: PropTypes.object.isRequired
+        reactState: PropTypes.object.isRequired
       }
       constructor () {
         super()
@@ -46,7 +46,7 @@ export default function Connect (subscribe, config = defaultConfig) {
       }
       componentDidMount () {
         // Subscribe to the store for updates
-        this.unsubscribe = this.context.codux.subscribe(this.onNotify.bind(this), config)
+        this.unsubscribe = this.context.reactState.subscribe(this.onNotify.bind(this), config)
       }
       componentWillReceiveProps (nextProps) {
         if (this.resolveProps(nextProps)) {
@@ -70,10 +70,10 @@ export default function Connect (subscribe, config = defaultConfig) {
           ...rest
         } = props
         const {
-          codux
+          reactState
         } = this.context
 
-        const mappedProps = this.subscribe(codux.getStore(), rest)
+        const mappedProps = this.subscribe(reactState.getStore(), rest)
 
         const newProps = {
           ...rest,
@@ -104,7 +104,7 @@ export default function Connect (subscribe, config = defaultConfig) {
           <ComponentToWrap
             {...this.props}
             {...this.resolvedProps}
-            dispatch={this.context.codux.dispatch}
+            dispatch={this.context.reactState.dispatch}
           />
         )
       }

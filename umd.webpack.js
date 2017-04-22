@@ -2,9 +2,9 @@ const webpack = require('webpack')
 module.exports = {
   entry: './lib/index.js',
   output: {
-    filename: './codux.js',
+    filename: './react-state.js',
     libraryTarget: 'umd',
-    library: 'Codux'
+    library: 'ReactState'
   },
   externals: {
     react: {

@@ -1,25 +1,24 @@
 {
-  "name": "codux",
-  "version": "0.0.9",
-  "description": "Predictable state container for self-contained React components",
+  "name": "react-state",
+  "version": "2.0.0",
+  "description": "Superpowers for managing local and reusable state in React",
   "license": "MIT",
-  "homepage": "https://github.com/tannerlinsley/codux#readme",
+  "homepage": "https://github.com/tannerlinsley/react-state#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tannerlinsley/codux.git"
+    "url": "git+https://github.com/tannerlinsley/react-state.git"
   },
   "keywords": [
     "react",
     "local",
     "state",
-    "redux",
     "reusable",
     "distributable"
   ],
   "main": "lib/index.js",
   "files": [
     "lib/",
-    "codux.js",
+    "react-state.js",
     "media/*.png"
   ],
   "scripts": {
@@ -33,7 +32,9 @@
     "storybook:prod": "yarn run docs && pushd docs; python -m SimpleHTTPServer 8001; popd",
     "docs": "build-storybook -o docs && cp .storybook/CNAME docs/CNAME"
   },
-  "peerDependencies": {},
+  "peerDependencies": {
+    "react": "^15.5.4"
+  },
   "devDependencies": {
     "@kadira/storybook": "^2.35.3",
     "@kadira/storybook-addon-options": "^1.0.2",
@@ -53,7 +54,6 @@
     "npm-run-all": "^4.0.2",
     "onchange": "^3.0.2",
     "raw-loader": "^0.5.1",
-    "react": "^15.5.4",
     "react-addons-perf": "^15.3.2",
     "react-dom": "^15.3.1",
     "react-resizable": "^1.6.0",
@@ -73,7 +73,7 @@
       "dist",
       "lib",
       "example",
-      "codux.js",
+      "react-state.js",
       "stories",
       "docs"
     ]

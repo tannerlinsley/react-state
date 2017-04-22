@@ -3,5 +3,5 @@ lib
 dist
 *.log
 .DS_Store
-codux.js
-codux.js.zip
+react-state.js
+react-state.js.zip
