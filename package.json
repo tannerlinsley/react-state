@@ -22,11 +22,11 @@
     "media/*.png"
   ],
   "scripts": {
-    "build:node": "babel src --out-dir lib --source-maps inline",
-    "watch": "onchange 'src/**' -i -- npm-run-all build:*",
+    "build": "babel src --out-dir lib --source-maps inline",
+    "watch": "onchange 'src/**' -i -- npm run build",
     "test": "standard",
     "umd": "rimraf react-table.js && webpack --config umd.webpack.js",
-    "prepublish": "npm-run-all build:* && npm run umd",
+    "prepublish": "npm run build && npm run umd",
     "postpublish": "git push --tags",
     "storybook": "start-storybook -p 8000 -c .storybook",
     "storybook:prod": "yarn run docs && pushd docs; python -m SimpleHTTPServer 8001; popd",
@@ -51,7 +51,6 @@
     "lodash": "^4.17.4",
     "markdown-loader": "^2.0.0",
     "nib": "^1.1.2",
-    "npm-run-all": "^4.0.2",
     "onchange": "^3.0.2",
     "raw-loader": "^0.5.1",
     "react-addons-perf": "^15.3.2",
