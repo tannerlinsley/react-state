@@ -1,6 +1,6 @@
 {
   "name": "react-state",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Superpowers for managing local and reusable state in React",
   "license": "MIT",
   "homepage": "https://github.com/tannerlinsley/react-state#readme",
