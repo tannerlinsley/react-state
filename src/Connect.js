@@ -1,4 +1,5 @@
-import React, { PureComponent, PropTypes } from 'react'
+import React, { PureComponent } from 'react'
+import PropTypes from 'prop-types'
 
 const alwaysUpdate = d => d
 const neverUpdate = () => ({})
@@ -7,21 +8,21 @@ const defaultConfig = {
   statics: {}
 }
 
-export default function Connect (subscribe, config = defaultConfig) {
+export default function Connect(subscribe, config = defaultConfig) {
   // If subscribe is true, always update,
   // If Subscribe is truthy, expect a function
   // Otherwise, never update the component, only provide dispatch
-  subscribe = subscribe === true ? alwaysUpdate : (subscribe || neverUpdate)
+  subscribe = subscribe === true ? alwaysUpdate : subscribe || neverUpdate
   const { statics } = config
 
-  return (ComponentToWrap) => {
+  return ComponentToWrap => {
     class Connected extends PureComponent {
       // let’s define what’s needed from the `context`
       static displayName = `Connect(${ComponentToWrap.displayName || ComponentToWrap.name})`
       static contextTypes = {
         reactState: PropTypes.object.isRequired
       }
-      constructor () {
+      constructor() {
         super()
         // Bind non-react methods
         this.onNotify = this.onNotify.bind(this)
@@ -40,38 +41,39 @@ export default function Connect (subscribe, config = defaultConfig) {
           this.subscribe = subscribe
         }
       }
-      componentWillMount () {
+      componentWillMount() {
         // Resolve props on mount
         this.resolveProps()
       }
-      componentDidMount () {
+      componentDidMount() {
         // Subscribe to the store for updates
-        this.unsubscribe = this.context.reactState.subscribe(this.onNotify.bind(this), config)
+        this.unsubscribe = this.context.reactState.subscribe(
+          this.onNotify.bind(this),
+          config
+        )
       }
-      componentWillReceiveProps (nextProps) {
+      componentWillReceiveProps(nextProps) {
         if (this.resolveProps(nextProps)) {
           this.forceUpdate()
         }
       }
-      shouldComponentUpdate () {
+      shouldComponentUpdate() {
         return false
       }
-      componentWillUnmount () {
+      componentWillUnmount() {
         this.unsubscribe()
       }
-      onNotify () {
+      onNotify() {
         if (this.resolveProps()) {
           this.forceUpdate()
         }
       }
-      resolveProps (props = this.props) {
+      resolveProps(props = this.props) {
         const {
           children, // eslint-disable-line
           ...rest
         } = props
-        const {
-          reactState
-        } = this.context
+        const { reactState } = this.context
 
         const mappedProps = this.subscribe(reactState.getStore(), rest)
 
@@ -99,7 +101,7 @@ export default function Connect (subscribe, config = defaultConfig) {
 
         return needsUpdate
       }
-      render () {
+      render() {
         return (
           <ComponentToWrap
             {...this.props}

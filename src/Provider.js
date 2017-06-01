@@ -1,16 +1,17 @@
-import React, { PureComponent, PropTypes } from 'react'
+import React, { PureComponent } from 'react'
+import PropTypes from 'prop-types'
 
 const defaultConfig = {
   initial: {}
 }
 
-export default function (ComponentToWrap, config = defaultConfig) {
+export default function(ComponentToWrap, config = defaultConfig) {
   return class Provider extends PureComponent {
     // Define our context key
     static childContextTypes = {
       reactState: PropTypes.object.isRequired
     }
-    constructor (props) {
+    constructor(props) {
       super()
       const {
         children, // eslint-disable-line
@@ -25,7 +26,7 @@ export default function (ComponentToWrap, config = defaultConfig) {
       this.subscribe = this.subscribe.bind(this)
       this.dispatch = this.dispatch.bind(this)
     }
-    componentWillReceiveProps (newProps) {
+    componentWillReceiveProps(newProps) {
       // If the component receives new props, merge them into
       // the store and notify subscribers
       this.dispatch(state => ({
@@ -34,7 +35,7 @@ export default function (ComponentToWrap, config = defaultConfig) {
       }))
       this.forceUpdate()
     }
-    subscribe (connect, meta = {}) {
+    subscribe(connect, meta = {}) {
       const subscription = {
         connect,
         meta
@@ -46,7 +47,7 @@ export default function (ComponentToWrap, config = defaultConfig) {
         this.subscriptions = this.subscriptions.filter(d => d !== subscription)
       }
     }
-    dispatch (fn, meta = {}) {
+    dispatch(fn, meta = {}) {
       // When we recieve a dispatch command, build a new version
       // of the store by calling the dispatch function
 
@@ -64,7 +65,7 @@ export default function (ComponentToWrap, config = defaultConfig) {
       })
       this.forceUpdate()
     }
-    getChildContext () {
+    getChildContext() {
       return {
         reactState: {
           getStore: () => this.store,
@@ -73,11 +74,9 @@ export default function (ComponentToWrap, config = defaultConfig) {
         }
       }
     }
-    render () {
+    render() {
       return (
-        <ComponentToWrap
-          {...this.store}
-        >
+        <ComponentToWrap {...this.store}>
           {this.props.children}
         </ComponentToWrap>
       )
