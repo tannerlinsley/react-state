@@ -1,90 +1,41 @@
 {
   "name": "react-state",
-  "version": "2.0.0",
-  "description": "Superpowers for managing local and reusable state in React",
-  "license": "MIT",
-  "homepage": "https://github.com/tannerlinsley/react-state#readme",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/tannerlinsley/react-state.git"
-  },
-  "keywords": [
-    "react",
-    "local",
-    "state",
-    "reusable",
-    "distributable"
-  ],
+  "version": "2.1.0",
+  "description": "Yet another react state manager",
   "main": "lib/index.js",
+  "module": "es/index.js",
   "files": [
-    "lib/",
-    "react-state.js",
-    "media/*.png"
+    "css",
+    "es",
+    "lib",
+    "umd"
   ],
   "scripts": {
-    "build": "babel src --out-dir lib --source-maps inline",
-    "watch": "onchange 'src/**' -i -- npm run build",
-    "test": "standard",
-    "umd": "rimraf react-table.js && webpack --config umd.webpack.js",
-    "prepublish": "npm run build && npm run umd",
-    "postpublish": "git push --tags",
-    "storybook": "start-storybook -p 8000 -c .storybook",
-    "storybook:prod": "yarn run docs && pushd docs; python -m SimpleHTTPServer 8001; popd",
-    "docs": "build-storybook -o docs && cp .storybook/CNAME docs/CNAME"
+    "build": "nwb build-react-component",
+    "clean": "nwb clean-module && nwb clean-demo",
+    "start": "nwb serve-react-demo",
+    "test": "nwb test-react",
+    "test:coverage": "nwb test-react --coverage",
+    "test:watch": "nwb test-react --server"
   },
+  "dependencies": {},
   "peerDependencies": {
-    "react": "^15.5.4"
+    "prop-types": "16.x",
+    "react": "16.x"
   },
   "devDependencies": {
-    "@kadira/storybook": "^2.35.3",
-    "@kadira/storybook-addon-options": "^1.0.2",
-    "babel-cli": "^6.18.0",
-    "babel-eslint": "^7.1.1",
-    "babel-plugin-transform-object-assign": "^6.8.0",
-    "babel-preset-es2015": "^6.14.0",
-    "babel-preset-react": "^6.11.1",
-    "babel-preset-stage-2": "^6.13.0",
-    "babelify": "^7.3.0",
-    "browserify": "^14.3.0",
-    "github-markdown-css": "^2.4.1",
-    "html-loader": "^0.4.4",
-    "lodash": "^4.17.4",
-    "markdown-loader": "^2.0.0",
-    "nib": "^1.1.2",
-    "onchange": "^3.0.2",
-    "raw-loader": "^0.5.1",
-    "react-addons-perf": "^15.3.2",
-    "react-dom": "^15.3.1",
-    "react-resizable": "^1.6.0",
-    "rimraf": "^2.6.1",
-    "standard": "^10.0.2",
-    "stylus": "^0.54.5",
-    "uglifyify": "^3.0.3",
-    "webpack": "^2.4.1"
+    "eslint": "^4.19.1",
+    "eslint-config-react-tools": "^1.2.5",
+    "nwb": "0.21.x",
+    "prop-types": "^15.6.1",
+    "react": "^16.3.0",
+    "react-dom": "^16.3.0"
   },
-  "browserify-shim": {
-    "react": "global:React"
-  },
-  "standard": {
-    "parser": "babel-eslint",
-    "ignore": [
-      "node_modules",
-      "dist",
-      "lib",
-      "example",
-      "react-state.js",
-      "stories",
-      "docs"
-    ]
-  },
-  "babel": {
-    "presets": [
-      "es2015",
-      "stage-2",
-      "react"
-    ],
-    "plugins": [
-      "transform-object-assign"
-    ]
-  }
+  "author": "",
+  "homepage": "",
+  "license": "MIT",
+  "repository": "",
+  "keywords": [
+    "react-component"
+  ]
 }

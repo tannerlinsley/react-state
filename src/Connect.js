@@ -1,25 +1,23 @@
-import React, { PureComponent, PropTypes } from 'react'
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 
 const alwaysUpdate = d => d
 const neverUpdate = () => ({})
 
-const defaultConfig = {
-  statics: {}
-}
+export default function Connect (subscribe, config = {}) {
+  const { statics = {} } = config
 
-export default function Connect (subscribe, config = defaultConfig) {
   // If subscribe is true, always update,
   // If Subscribe is truthy, expect a function
   // Otherwise, never update the component, only provide dispatch
-  subscribe = subscribe === true ? alwaysUpdate : (subscribe || neverUpdate)
-  const { statics } = config
+  subscribe = subscribe === true ? alwaysUpdate : subscribe || neverUpdate
 
-  return (ComponentToWrap) => {
-    class Connected extends PureComponent {
+  return ComponentToWrap => {
+    class Connected extends Component {
       // let’s define what’s needed from the `context`
       static displayName = `Connect(${ComponentToWrap.displayName || ComponentToWrap.name})`
       static contextTypes = {
-        reactState: PropTypes.object.isRequired
+        reactState: PropTypes.object.isRequired,
       }
       constructor () {
         super()
@@ -65,34 +63,24 @@ export default function Connect (subscribe, config = defaultConfig) {
         }
       }
       resolveProps (props = this.props) {
-        const {
-          children, // eslint-disable-line
-          ...rest
-        } = props
-        const {
-          reactState
-        } = this.context
+        const { children, ...rest } = props
+        const { reactState } = this.context
 
         const mappedProps = this.subscribe(reactState.getStore(), rest)
 
         const newProps = {
           ...rest,
-          ...mappedProps
+          ...mappedProps,
         }
 
         let needsUpdate = !this.resolvedProps
 
         if (this.resolvedProps) {
-          for (var prop in newProps) {
-            if (newProps.hasOwnProperty(prop)) {
-              if (this.resolvedProps[prop] !== newProps[prop]) {
-                needsUpdate = true
-                break
-              }
-              if (needsUpdate) break
+          Object.keys(newProps).forEach(prop => {
+            if (!needsUpdate && this.resolvedProps[prop] !== newProps[prop]) {
+              needsUpdate = true
             }
-            if (needsUpdate) break
-          }
+          })
         }
 
         this.resolvedProps = newProps
@@ -110,11 +98,10 @@ export default function Connect (subscribe, config = defaultConfig) {
       }
     }
 
-    for (var prop in statics) {
-      if (statics.hasOwnProperty(prop)) {
-        Connected[prop] = statics[prop]
-      }
-    }
+    Object.keys(statics).forEach(prop => {
+      Connected[prop] = statics[prop]
+    })
+
     return Connected
   }
 }
