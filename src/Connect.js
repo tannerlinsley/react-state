@@ -1,16 +1,19 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import hoistNonReactStatics from 'hoist-non-react-statics'
+
+//
 
 const alwaysUpdate = d => d
 const neverUpdate = () => ({})
 
-export default function Connect (subscribe, config = {}) {
-  const { statics = {} } = config
-
+export default function Connect (subscribe, config = { pure: true }) {
   // If subscribe is true, always update,
   // If Subscribe is truthy, expect a function
   // Otherwise, never update the component, only provide dispatch
   subscribe = subscribe === true ? alwaysUpdate : subscribe || neverUpdate
+
+  const { pure } = config
 
   return ComponentToWrap => {
     class Connected extends Component {
@@ -28,7 +31,9 @@ export default function Connect (subscribe, config = {}) {
         let subscribePreview
         try {
           subscribePreview = subscribe()
-        } catch (e) {}
+        } catch (e) {
+          // do nothing
+        }
 
         if (typeof subscribePreview === 'function') {
           // If it does, make a new instance of it for this component
@@ -47,12 +52,12 @@ export default function Connect (subscribe, config = {}) {
         this.unsubscribe = this.context.reactState.subscribe(this.onNotify.bind(this), config)
       }
       componentWillReceiveProps (nextProps) {
-        if (this.resolveProps(nextProps)) {
+        if (!pure && this.resolveProps(nextProps)) {
           this.forceUpdate()
         }
       }
       shouldComponentUpdate () {
-        return false
+        return !pure
       }
       componentWillUnmount () {
         this.unsubscribe()
@@ -98,9 +103,7 @@ export default function Connect (subscribe, config = {}) {
       }
     }
 
-    Object.keys(statics).forEach(prop => {
-      Connected[prop] = statics[prop]
-    })
+    hoistNonReactStatics(Connected, ComponentToWrap)
 
     return Connected
   }

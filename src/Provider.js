@@ -1,12 +1,15 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import hoistNonReactStatics from 'hoist-non-react-statics'
+
+//
 
 const defaultConfig = {
   initial: {},
 }
 
 export default function (ComponentToWrap, config = defaultConfig) {
-  return class Provider extends Component {
+  class Provider extends Component {
     // Define our context key
     static childContextTypes = {
       reactState: PropTypes.object.isRequired,
@@ -80,4 +83,8 @@ export default function (ComponentToWrap, config = defaultConfig) {
       return <ComponentToWrap {...this.store}>{this.props.children}</ComponentToWrap>
     }
   }
+
+  hoistNonReactStatics(Provider, ComponentToWrap)
+
+  return Provider
 }
