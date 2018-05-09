@@ -69,6 +69,7 @@ export default function (ComponentToWrap, config = defaultConfig) {
         }
       })
       this.forceUpdate()
+      return newStore
     }
     getChildContext () {
       return {
