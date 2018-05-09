@@ -45,7 +45,7 @@ export default function Connect (subscribe, config = { pure: true }) {
       }
       componentWillMount () {
         // Resolve props on mount
-        this.resolveProps()
+        this.resolveProps(this.props)
       }
       componentDidMount () {
         // Subscribe to the store for updates
@@ -63,19 +63,19 @@ export default function Connect (subscribe, config = { pure: true }) {
         this.unsubscribe()
       }
       onNotify () {
-        if (this.resolveProps()) {
+        if (this.resolveProps(this.props)) {
           this.forceUpdate()
         }
       }
-      resolveProps (props = this.props) {
+      resolveProps (props) {
         const { children, ...rest } = props
         const { reactState } = this.context
 
         const mappedProps = this.subscribe(reactState.getStore(), rest)
 
         const newProps = {
-          ...rest,
           ...mappedProps,
+          ...rest,
         }
 
         let needsUpdate = !this.resolvedProps
@@ -89,17 +89,14 @@ export default function Connect (subscribe, config = { pure: true }) {
         }
 
         this.resolvedProps = newProps
-
         return needsUpdate
       }
       render () {
-        return (
-          <ComponentToWrap
-            {...this.props}
-            {...this.resolvedProps}
-            dispatch={this.context.reactState.dispatch}
-          />
-        )
+        const props = {
+          ...this.resolvedProps,
+          ...this.props,
+        }
+        return <ComponentToWrap {...props} dispatch={this.context.reactState.dispatch} />
       }
     }
 
